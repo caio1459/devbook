@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/caio1459/devbook/src/controllers"
+	"github.com/caio1459/devbook/src/uploads"
 )
 
 // Cria rotas de usuarios
@@ -36,6 +37,12 @@ var routesUsers = []Route{
 		URI:                    "/api/users/{id}",
 		Method:                 http.MethodDelete,
 		Function:               controllers.DeleteUser,
+		RequiresAuthentication: false,
+	},
+	{
+		URI:                    "/api/users/upload",
+		Method:                 http.MethodPost,
+		Function:               uploads.UploadHandler,
 		RequiresAuthentication: false,
 	},
 }
