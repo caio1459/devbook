@@ -33,15 +33,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	//Cria um novo repositorio
 	repositorie := repositories.NewRepositorieUser(db)
-	userId, err := repositorie.Post(user)
+	userId, err := repositorie.PostUser(user)
 	if err != nil {
 		log.Fatal(err)
 	}
 	w.Write([]byte(fmt.Sprintf("Usuário %v inserido com sucesso!", userId)))
-}
-
-func PostImage(w http.ResponseWriter, r *http.Request){
-	
 }
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {

@@ -16,7 +16,7 @@ func NewRepositorieUser(db *sql.DB) *usersRepositorie {
 	return &usersRepositorie{db}
 }
 
-func (u usersRepositorie) Post(user models.User) (uint64, error) {
+func (u usersRepositorie) PostUser(user models.User) (uint64, error) {
 	statement, err := u.db.Prepare(
 		"INSERT INTO users (name, nick, email, password) VALUES(?, ?, ?, ?)",
 	)
