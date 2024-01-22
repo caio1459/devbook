@@ -2,15 +2,14 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/caio1459/devbook/src/database"
 	"github.com/caio1459/devbook/src/models"
 	"github.com/caio1459/devbook/src/repositories"
+	"github.com/caio1459/devbook/src/responses"
 	"github.com/caio1459/devbook/src/uploads"
 	"github.com/gorilla/mux"
 )
@@ -20,43 +19,40 @@ func PostImage(w http.ResponseWriter, r *http.Request) {
 
 	ID, err := strconv.ParseUint(parametros["id"], 10, 32)
 	if err != nil {
-		log.Fatalf("Erro ao converter o parâmetro para um inteiro: %v", err)
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	// Criar a estrutura de dados para armazenar os dados da imagem
-
-	// Decodificar o corpo da solicitação JSON e armazenar na estrutura de dados
-	//decoder := json.NewDecoder(r.Body)
-	// if err := decoder.Decode(&image); err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	body, err := ioutil.ReadAll(r.Body)
+	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Fatal(err)
+		responses.Erro(w, http.StatusBadRequest, err)
+		return
 	}
 	image := models.Image{}
 
-	if err = json.Unmarshal(body, &image); err != nil {
-		log.Fatal(err)
+	//Converte o json para um struct
+	if err = json.Unmarshal(requestBody, &image); err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	//Abre uma conexão
 	db, err := database.Connection()
 	if err != nil {
-		log.Fatal(err)
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
 	}
+	defer db.Close()
 
 	repositorie := repositories.NewRepositorieImage(db)
 
-	Id, err := repositorie.PostImage(image, ID)
+	image.ID, err = repositorie.PostImage(image, ID)
 	if err != nil {
-		log.Fatal(err)
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	uploads.UploadHandler(ID, image.FileName)
-
-	// Responder com sucesso
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Upload de imagem cadastrada com sucesso para o usuario %v\n", Id)
+	responses.Json(w, http.StatusCreated, image)
 }

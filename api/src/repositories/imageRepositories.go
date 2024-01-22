@@ -25,11 +25,5 @@ func (i imagesRepositorie) PostImage(image models.Image, id uint64) (uint64, err
 	if err != nil {
 		return 0, err
 	}
-
-	// lastID, err := results.LastInsertId()
-	// if err != nil {
-	// 	return 0, err
-	// }
-
 	return id, err
 }
