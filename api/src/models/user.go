@@ -4,6 +4,9 @@ import (
 	"errors"
 	"strings"
 	"time"
+
+	"github.com/badoux/checkmail"
+	"github.com/caio1459/devbook/src/security"
 )
 
 type User struct {
@@ -19,23 +22,36 @@ func (user *User) validate(stage string) error {
 	if user.Password == "" && stage == "cadastro" {
 		return errors.New("é necessário preencher a senha")
 	}
-
-	switch "" {
-	case user.Name:
+	if user.Email == "" {
 		return errors.New("é necessário preencher o nome")
-	case user.Nick:
-		return errors.New("é necessário preencher o Nick de usuário")
-	case user.Email:
-		return errors.New("é necessário preencher o email")
-	default:
-		return nil
 	}
+	if user.Nick == "" {
+		return errors.New("é necessário preencher o Nick de usuário")
+	}
+	if user.Email == "" {
+		return errors.New("é necessário preencher o email")
+	}
+	if err := checkmail.ValidateFormat(user.Email); err != nil {
+		return errors.New("e-mail inválido")
+	}
+	return nil
 }
 
-func (user *User) formatStrings() {
+//Fução responsavel por formatar strings e cryptografar senhas 
+func (user *User) formatStrings(stage string) error {
 	user.Name = strings.TrimSpace(user.Name)
 	user.Nick = strings.TrimSpace(user.Nick)
 	user.Email = strings.TrimSpace(user.Email)
+
+	if stage == "cadastro" {
+		hashedPassword, err := security.Hash(user.Password)
+		if err != nil {
+			return err
+		}
+		user.Password = string(hashedPassword)
+	}
+
+	return nil
 }
 
 // Chama os métodos de valitação e formatação
@@ -43,6 +59,8 @@ func (user *User) Prepare(stage string) error {
 	if err := user.validate(stage); err != nil {
 		return err
 	}
-	user.formatStrings()
+	if err := user.formatStrings(stage); err != nil {
+		return err
+	}
 	return nil
 }

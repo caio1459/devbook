@@ -35,7 +35,6 @@ func (u usersRepositorie) PostUser(user models.User) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-
 	return uint64(lastID), err
 }
 
@@ -58,7 +57,6 @@ func (u usersRepositorie) SelectUsers(valueFilter string) ([]models.User, error)
 		}
 		users = append(users, user)
 	}
-
 	return users, nil
 }
 
@@ -88,7 +86,6 @@ func (u usersRepositorie) UpdateUser(id uint64, user models.User) error {
 	if _, err = statement.Exec(user.Name, user.Nick, user.Email, id); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -103,6 +100,21 @@ func (u usersRepositorie) DeleteUser(id uint64) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
+}
+
+func (u usersRepositorie) SelectUserFromEmail(email string) (models.User, error) {
+	row, err := u.db.Query("SELECT user_id, password FROM users WHERE email = ?", email)
+	if err != nil {
+		return models.User{}, err
+	}
+	defer row.Close()
+
+	user := models.User{}
+	if row.Next() {
+		if err = row.Scan(&user.ID, &user.Password); err != nil {
+			return models.User{}, err
+		}
+	}
+	return user, nil
 }
