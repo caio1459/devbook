@@ -10,9 +10,10 @@ import (
 )
 
 var (
-	StringConnection string = ""
-	Port             int    = 0
-	err              error
+	StringConnection string //String de conexão com o banco
+	Port             int    //Porta do servidor
+	err              error  //Erro de retorno de funções
+	SecretKey        []byte //Chave para assinar o token
 )
 
 // Inicia as variaveis de ambiente
@@ -33,4 +34,6 @@ func Load() {
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_NAME"),
 	)
+
+	SecretKey = []byte(os.Getenv("SECRET_KEY"))
 }

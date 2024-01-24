@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/caio1459/devbook/src/authentication"
 	"github.com/caio1459/devbook/src/database"
 	"github.com/caio1459/devbook/src/models"
 	"github.com/caio1459/devbook/src/repositories"
@@ -45,5 +46,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		responses.Erro(w, http.StatusUnauthorized, err)
 		return
 	}
-	w.Write([]byte("Usuário logado"))
+
+	token, err := authentication.GenerateToken(savedUser.ID)
+	if err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	w.Write([]byte(token))
 }

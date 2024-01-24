@@ -10,5 +10,5 @@ var routeLogin = Route{
 	URI:                    "/api/login",
 	Method:                 http.MethodPost,
 	Function:               controllers.Login,
-	RequiresAuthentication: false,
+	RequiresAuthentication: true,
 }
