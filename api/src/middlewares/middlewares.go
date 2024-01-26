@@ -4,17 +4,23 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/caio1459/devbook/src/authentication"
+	"github.com/caio1459/devbook/src/responses"
 )
 
 // Verifica se o user fazendo a requisição está autenticado
 func Authenticate(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Validando..."))
-		next(w, r) //Executa próxima função
+		if err := authentication.ValidadeToken(r); err != nil {
+			responses.Erro(w, http.StatusUnauthorized, err)
+			return
+		}
+		next(w, r) //Executa próxima função, que pode ser a passada com parametro
 	}
 }
 
-//Gera logs de rotas
+// Gera logs de rotas
 func Logger(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Abrir ou criar um arquivo de logs

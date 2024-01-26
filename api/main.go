@@ -12,7 +12,7 @@ import (
 	"github.com/caio1459/devbook/src/router"
 )
 
-//Gera uma chave para assinatura de token aleátoria para ser colocada no arquivo .env
+//*Gera uma chave para assinatura de token aleátoria para ser colocada no arquivo .env
 // func init() {
 // 	key := make([]byte, 64)
 // 	if _, err := rand.Read(key); err != nil {
