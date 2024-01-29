@@ -56,6 +56,7 @@ func returnVerificationKey(token *jwt.Token) (interface{}, error) {
 	return config.SecretKey, nil
 }
 
+// Extrai o id do usuário que está com o token
 func ExtractUserId(r *http.Request) (uint64, error) {
 	tokenString := extractToken(r)
 	token, err := jwt.Parse(tokenString, returnVerificationKey)

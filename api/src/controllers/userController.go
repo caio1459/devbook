@@ -2,16 +2,19 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 
+	"github.com/caio1459/devbook/src/authentication"
 	"github.com/caio1459/devbook/src/database"
 	"github.com/caio1459/devbook/src/models"
 	"github.com/caio1459/devbook/src/repositories"
 	"github.com/caio1459/devbook/src/responses"
+	"github.com/caio1459/devbook/src/uploads"
 	"github.com/gorilla/mux"
 )
 
@@ -50,6 +53,13 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		responses.Erro(w, http.StatusInternalServerError, err)
 		return
+	}
+
+	if user.ImageUrl != "" {
+		//Faz o upload das imagens
+		if err := uploads.UploadHandler(user.ImageUrl); err != nil {
+			responses.Erro(w, http.StatusInternalServerError, err)
+		}
 	}
 	responses.Json(w, http.StatusCreated, user)
 }
@@ -111,6 +121,18 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	IDToken, err := authentication.ExtractUserId(r)
+	if err != nil {
+		responses.Erro(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	//Só deixa o usuário atualizar a si mesmo
+	if ID != int64(IDToken) {
+		responses.Erro(w, http.StatusForbidden, errors.New("não é possivel alterar esse usuário"))
+		return
+	}
+
 	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		responses.Erro(w, http.StatusUnprocessableEntity, err)
@@ -140,6 +162,13 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		responses.Erro(w, http.StatusInternalServerError, err)
 		return
 	}
+
+	if user.ImageUrl != "" {
+		//Faz o upload das imagens
+		if err := uploads.UploadHandler(user.ImageUrl); err != nil {
+			responses.Erro(w, http.StatusInternalServerError, err)
+		}
+	}
 	responses.Json(w, http.StatusNoContent, nil)
 }
 
@@ -148,6 +177,18 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	ID, err := strconv.ParseInt(parameter["id"], 10, 64)
 	if err != nil {
 		responses.Erro(w, http.StatusBadRequest, err)
+		return
+	}
+
+	IDToken, err := authentication.ExtractUserId(r)
+	if err != nil {
+		responses.Erro(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	//Só deixa o usuário atualizar a si mesmo
+	if ID != int64(IDToken) {
+		responses.Erro(w, http.StatusForbidden, errors.New("não é possivel deletar esse usuário"))
 		return
 	}
 
@@ -165,4 +206,96 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	responses.Json(w, http.StatusOK, nil)
+}
+
+func FollowUser(w http.ResponseWriter, r *http.Request) {
+	parameters := mux.Vars(r)
+	followID, err := strconv.ParseUint(parameters["id"], 10, 64)
+	if err != nil {
+		responses.Erro(w, http.StatusBadRequest, err)
+		return
+	}
+
+	userID, err := authentication.ExtractUserId(r)
+	if err != nil {
+		responses.Erro(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	if followID == userID {
+		responses.Erro(w, http.StatusForbidden, errors.New("não é possivel seguir você mesmo"))
+		return
+	}
+
+	db, err := database.Connection()
+	if err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repositorie := repositories.NewRepositorieUser(db)
+	if err = repositorie.PostFollow(userID, followID); err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.Json(w, http.StatusNoContent, nil)
+}
+
+func StopFollowUser(w http.ResponseWriter, r *http.Request) {
+	parameters := mux.Vars(r)
+	followID, err := strconv.ParseUint(parameters["id"], 10, 64)
+	if err != nil {
+		responses.Erro(w, http.StatusBadRequest, err)
+		return
+	}
+
+	userID, err := authentication.ExtractUserId(r)
+	if err != nil {
+		responses.Erro(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	if followID == userID {
+		responses.Erro(w, http.StatusForbidden, errors.New("não é possivel deixar de seguir você mesmo"))
+		return
+	}
+
+	db, err := database.Connection()
+	if err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repositorie := repositories.NewRepositorieUser(db)
+	if err = repositorie.DeleteFollow(userID, followID); err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.Json(w, http.StatusNoContent, nil)
+}
+
+func GetFollows(w http.ResponseWriter, r *http.Request) {
+	parameters := mux.Vars(r)
+	ID, err := strconv.ParseUint(parameters["id"], 10, 64)
+	if err != nil {
+		responses.Erro(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := database.Connection()
+	if err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repositorie := repositories.NewRepositorieUser(db)
+	follows, err := repositorie.SelectFollows(ID)
+	if err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.Json(w, http.StatusOK, follows)
 }

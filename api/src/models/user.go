@@ -15,6 +15,7 @@ type User struct {
 	Nick     string    `json:"nick,omitempty"`
 	Email    string    `json:"email,omitempty"`
 	Password string    `json:"password,omitempty"`
+	ImageUrl string    `json:"image_url,omitempty"`
 	Register time.Time `json:"register,omitempty"`
 }
 
@@ -37,11 +38,12 @@ func (user *User) validate(stage string) error {
 	return nil
 }
 
-//Fução responsavel por formatar strings e cryptografar senhas 
+// Fução responsavel por formatar strings e cryptografar senhas
 func (user *User) formatStrings(stage string) error {
 	user.Name = strings.TrimSpace(user.Name)
 	user.Nick = strings.TrimSpace(user.Nick)
 	user.Email = strings.TrimSpace(user.Email)
+	user.ImageUrl = strings.TrimSpace(user.ImageUrl)
 
 	if stage == "cadastro" {
 		hashedPassword, err := security.Hash(user.Password)

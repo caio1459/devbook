@@ -1,41 +1,42 @@
 package uploads
 
 import (
-	"fmt"
+	"errors"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path"
 )
 
-func UploadHandler(id uint64, img string) {
+func UploadHandler(img string) error {
 	//Verifica se a pasta images existe para fazer o upload
 	if _, err := os.Stat("images"); os.IsNotExist(err) {
 		err := os.Mkdir("images", 0755)
 		if err != nil {
-			log.Fatalf("Falha ao criar local do arquivo: %v", err)
+			return errors.New("falha ao criar local do arquivo")
 		}
 	}
 
 	// Baixar a imagem a partir da URL fornecida
 	response, err := http.Get(img)
 	if err != nil {
-		log.Fatal(err)
+		return errors.New("falha ao baixar a imagem da requisição")
 	}
 	defer response.Body.Close()
 
 	// Criar um arquivo local para salvar a imagem
-	localFileName := path.Join("images", fmt.Sprintf("user_%v_%v", id, path.Base(img)))
+	localFileName := path.Join("images", path.Base(img))
+	//localFileName := path.Join("images", path.Base("user.jpg"))
 	localFile, err := os.Create(localFileName)
 	if err != nil {
-		log.Fatalf("Falha ao criar arquivo: %v", err)
+		return errors.New("falha ao criar arquivo")
 	}
 	defer localFile.Close()
 
 	// Copiar o conteúdo da resposta HTTP para o arquivo local
 	_, err = io.Copy(localFile, response.Body)
 	if err != nil {
-		log.Fatalf("Falha o conteúdo da resposta HTTP para o arquivo local: %v", err)
+		return errors.New("falha o conteúdo da resposta HTTP para o arquivo local")
 	}
+	return nil
 }

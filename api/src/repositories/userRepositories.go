@@ -19,14 +19,14 @@ func NewRepositorieUser(db *sql.DB) *usersRepositorie {
 
 func (u usersRepositorie) PostUser(user models.User) (uint64, error) {
 	statement, err := u.db.Prepare(
-		"INSERT INTO users (name, nick, email, password) VALUES(?, ?, ?, ?)",
+		"INSERT INTO users (name, nick, email, password, image_url) VALUES(?, ?, ?, ?, ?)",
 	)
 	if err != nil {
 		return 0, err
 	}
 	defer statement.Close()
 
-	results, err := statement.Exec(user.Name, user.Nick, user.Email, user.Password)
+	results, err := statement.Exec(user.Name, user.Nick, user.Email, user.Password, user.ImageUrl)
 	if err != nil {
 		return 0, err
 	}
@@ -41,7 +41,7 @@ func (u usersRepositorie) PostUser(user models.User) (uint64, error) {
 func (u usersRepositorie) SelectUsers(valueFilter string) ([]models.User, error) {
 	valueFilter = fmt.Sprintf("%%%s%%", valueFilter) //Cria o LIKE %Valor%
 	rows, err := u.db.Query(
-		"SELECT user_id, name, nick, email, register FROM users WHERE name LIKE ? OR nick LIKE ?",
+		"SELECT user_id, name, nick, email, image_url,register FROM users WHERE name LIKE ? OR nick LIKE ?",
 		valueFilter, valueFilter,
 	)
 	if err != nil {
@@ -52,7 +52,7 @@ func (u usersRepositorie) SelectUsers(valueFilter string) ([]models.User, error)
 	users := []models.User{}
 	for rows.Next() {
 		user := models.User{}
-		if err = rows.Scan(&user.ID, &user.Name, &user.Nick, &user.Email, &user.Register); err != nil {
+		if err = rows.Scan(&user.ID, &user.Name, &user.Nick, &user.Email, &user.ImageUrl, &user.Register); err != nil {
 			return nil, err
 		}
 		users = append(users, user)
@@ -61,7 +61,9 @@ func (u usersRepositorie) SelectUsers(valueFilter string) ([]models.User, error)
 }
 
 func (u usersRepositorie) SelectUser(id uint64) (models.User, error) {
-	row, err := u.db.Query("SELECT user_id, name, nick, email, register FROM users WHERE user_id = ?", id)
+	row, err := u.db.Query(
+		"SELECT user_id, name, nick, email, image_url,register FROM users WHERE user_id = ?", id,
+	)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -69,7 +71,7 @@ func (u usersRepositorie) SelectUser(id uint64) (models.User, error) {
 
 	user := models.User{}
 	if row.Next() {
-		if err := row.Scan(&user.ID, &user.Name, &user.Nick, &user.Email, &user.Register); err != nil {
+		if err := row.Scan(&user.ID, &user.Name, &user.Nick, &user.Email, &user.ImageUrl, &user.Register); err != nil {
 			return models.User{}, err
 		}
 	}
@@ -77,13 +79,15 @@ func (u usersRepositorie) SelectUser(id uint64) (models.User, error) {
 }
 
 func (u usersRepositorie) UpdateUser(id uint64, user models.User) error {
-	statement, err := u.db.Prepare("UPDATE users SET name = ?, nick = ?, email = ? WHERE user_id = ?")
+	statement, err := u.db.Prepare(
+		"UPDATE users SET name = ?, nick = ?, email = ?, image_url = ? WHERE user_id = ?",
+	)
 	if err != nil {
 		return err
 	}
 	defer statement.Close()
 
-	if _, err = statement.Exec(user.Name, user.Nick, user.Email, id); err != nil {
+	if _, err = statement.Exec(user.Name, user.Nick, user.Email, user.ImageUrl, id); err != nil {
 		return err
 	}
 	return nil
@@ -117,4 +121,55 @@ func (u usersRepositorie) SelectUserFromEmail(email string) (models.User, error)
 		}
 	}
 	return user, nil
+}
+
+// Permite que um user siga outro
+func (u usersRepositorie) PostFollow(userID, followID uint64) error {
+	statement, err := u.db.Prepare("INSERT IGNORE INTO followers (user_id, follower_id) VALUES (?, ?)")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err := statement.Exec(userID, followID); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Permite que um user deixe de siguir outro
+func (u usersRepositorie) DeleteFollow(userID, followID uint64) error {
+	statement, err := u.db.Prepare("DELETE FROM followers WHERE user_id = ? AND follower_id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(userID, followID); err != nil {
+		return err
+	}
+	return nil
+}
+
+//Seleciona os seguidoes de um usuário
+func (u usersRepositorie) SelectFollows(id uint64) ([]models.User, error) {
+	rows, err := u.db.Query(
+		`SELECT u.name, u.nick, u.email, u.register 
+		FROM users u, followers f
+		WHERE u.user_id = f.follower_id AND f.user_id = ?`, id,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	users := []models.User{}
+	for rows.Next() {
+		user := models.User{}
+		if err = rows.Scan(&user.Name, &user.Nick, &user.Email, &user.Register); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	return users, nil
 }
