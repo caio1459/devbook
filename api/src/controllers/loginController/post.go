@@ -1,4 +1,4 @@
-package controllers
+package logincontroller
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"github.com/caio1459/devbook/src/authentication"
 	"github.com/caio1459/devbook/src/database"
 	"github.com/caio1459/devbook/src/models"
-	"github.com/caio1459/devbook/src/repositories"
+	userrepositories "github.com/caio1459/devbook/src/repositories/userRepositories"
 	"github.com/caio1459/devbook/src/responses"
 	"github.com/caio1459/devbook/src/security"
 )
@@ -34,7 +34,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	defer db.Close()
 
-	repositorie := repositories.NewRepositorieUser(db)
+	repositorie := userrepositories.NewRepositorieUser(db)
 	//Faz um SELECT por email pra comparar com o valor da requisição
 	savedUser, err := repositorie.SelectUserFromEmail(user.Email)
 	if err != nil {
@@ -48,9 +48,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token, _ := authentication.GenerateToken(savedUser.ID)
-	// if err != nil {
-	// 	responses.Erro(w, http.StatusInternalServerError, err)
-	// 	return
-	// }
+	if err != nil {
+		responses.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
 	w.Write([]byte(token))
 }
