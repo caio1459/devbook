@@ -16,3 +16,16 @@ func (u usersRepositorie) UpdateUser(id uint64, user models.User) error {
 	}
 	return nil
 }
+
+func (u usersRepositorie) UpdatePassword(id uint64, password string) error {
+	statemet, err := u.db.Prepare("UPDATE users SET password = ? WHERE user_id = ?")
+	if err != nil {
+		return err
+	}
+	defer statemet.Close()
+	
+	if _, err = statemet.Exec(password, id); err != nil {
+		return err
+	}
+	return nil
+}

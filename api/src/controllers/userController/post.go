@@ -13,7 +13,6 @@ import (
 	"github.com/caio1459/devbook/src/models"
 	userrepositories "github.com/caio1459/devbook/src/repositories/userRepositories"
 	"github.com/caio1459/devbook/src/responses"
-	"github.com/caio1459/devbook/src/security"
 	"github.com/caio1459/devbook/src/uploads"
 	"github.com/gorilla/mux"
 )
@@ -57,7 +56,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	if user.ImageUrl != "" {
 		//Faz o upload das imagens
-		if err := uploads.UploadHandler(user.ImageUrl); err != nil {
+		if err := uploads.UploadHandler(user.ImageUrl, user.ID, "user"); err != nil {
 			responses.Erro(w, http.StatusInternalServerError, err)
 		}
 	}
@@ -96,55 +95,4 @@ func FollowUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	responses.Json(w, http.StatusOK, fmt.Sprintf("Usário %v seguido com sucesso!", followID))
-}
-
-func UpdatePassword(w http.ResponseWriter, r *http.Request) {
-	parameters := mux.Vars(r)
-	ID, err := strconv.ParseUint(parameters["id"], 10, 64)
-	if err != nil {
-		responses.Erro(w, http.StatusBadRequest, err)
-		return
-	}
-
-	userID, err := authentication.ExtractUserId(r)
-	if err != nil {
-		responses.Erro(w, http.StatusUnauthorized, err)
-		return
-	}
-
-	if ID != userID {
-		responses.Erro(w, http.StatusForbidden, errors.New("não atualizar a senha de outro usuário"))
-		return
-	}
-
-	requestBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		responses.Erro(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	password := models.Password{}
-	if err = json.Unmarshal(requestBody, &password); err != nil {
-		responses.Erro(w, http.StatusBadRequest, err)
-		return
-	}
-
-	db, err := database.Connection()
-	if err != nil {
-		responses.Erro(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
-
-	repositorie := userrepositories.NewRepositorieUser(db)
-	passwordDB, err := repositorie.SelectUserPassword(ID)
-	if err != nil {
-		responses.Erro(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	if err = security.CheckPassword(password.Current, passwordDB); err != nil{
-		responses.Erro(w, http.StatusUnauthorized, errors.New("a senha atual está incorreta"))
-		return
-	}
 }

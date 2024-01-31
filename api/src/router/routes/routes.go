@@ -20,6 +20,8 @@ func RouteConfig(r *mux.Router) *mux.Router {
 	routes := routesUsers
 	//Adiciona mais rotas
 	routes = append(routes, routeLogin)
+	routes = append(routes, routesPublications...)
+	
 	//Separa as rotas existentes
 	for _, route := range routes {
 		if route.RequiresAuthentication {

@@ -64,7 +64,7 @@ var routesUsers = []Route{
 	},
 	{
 		URI:                    "/api/users/{id}/update-password",
-		Method:                 http.MethodPost,
+		Method:                 http.MethodPut,
 		Function:               usercontroller.UpdatePassword,
 		RequiresAuthentication: true,
 	},
