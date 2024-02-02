@@ -20,7 +20,8 @@ func (u usersRepositorie) SelectUsers(valueFilter string) ([]models.User, error)
 	users := []models.User{}
 	for rows.Next() {
 		user := models.User{}
-		if err = rows.Scan(&user.ID, &user.Name, &user.Nick, &user.Email, &user.ImageUrl, &user.Register); err != nil {
+		if err = rows.Scan(&user.ID, &user.Name, &user.Nick, &user.Email, &user.ImageUrl, &user.Register); 
+		err != nil {
 			return nil, err
 		}
 		users = append(users, user)
