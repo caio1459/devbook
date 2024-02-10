@@ -10,6 +10,7 @@ import (
 
 	"github.com/caio1459/devbook/src/config"
 	"github.com/caio1459/devbook/src/router"
+	"github.com/gorilla/handlers"
 )
 
 //*Gera uma chave para assinatura de token aleátoria para ser colocada no arquivo .env
@@ -28,5 +29,10 @@ func main() {
 	fmt.Printf("Escutando na porta %v", os.Getenv("PORT"))
 	r := router.GenerateRouter()
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", os.Getenv("PORT")), r))
+	// Adicione o manipulador CORS aqui para autorização de outras aplicações
+	headers := handlers.AllowedHeaders([]string{"Content-Type", "Authorization"})
+	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"})
+	origins := handlers.AllowedOrigins([]string{"http://localhost:3000"}) 
+
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", os.Getenv("PORT")), handlers.CORS(headers, methods, origins)(r)))
 }

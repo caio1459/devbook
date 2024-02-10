@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -23,6 +24,11 @@ func Authenticate(next http.HandlerFunc) http.HandlerFunc {
 // Gera logs de rotas
 func Logger(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		//Pega o id do usuário
+		ID, err := authentication.ExtractUserId(r)
+		if err != nil {
+			fmt.Printf("Erro ao pegar o ID do usuário: %v", err)
+		}
 		// Abrir ou criar um arquivo de logs
 		file, err := os.OpenFile("logfile.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
 		if err != nil {
@@ -31,7 +37,7 @@ func Logger(next http.HandlerFunc) http.HandlerFunc {
 		defer file.Close()
 		// Configurar o logger para escrever no arquivo
 		log.SetOutput(file)
-		log.Printf(" | Método: %s | URI: %s", r.Method, r.RequestURI)
+		log.Printf(" | Método: %s | URI: %s | User ID: %v", r.Method, r.RequestURI, ID)
 
 		next(w, r)
 	}
