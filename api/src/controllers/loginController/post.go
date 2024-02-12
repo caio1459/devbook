@@ -52,5 +52,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		responses.Erro(w, http.StatusInternalServerError, err)
 		return
 	}
-	w.Write([]byte(token))
+
+	response := models.Response{
+		User:  savedUser,
+		Token: token,
+	}
+
+	jsonData, err := json.Marshal(response)
+	if err != nil {
+		responses.Erro(w, http.StatusBadRequest, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonData)
 }

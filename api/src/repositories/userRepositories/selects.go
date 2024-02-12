@@ -20,8 +20,7 @@ func (u usersRepositorie) SelectUsers(valueFilter string) ([]models.User, error)
 	users := []models.User{}
 	for rows.Next() {
 		user := models.User{}
-		if err = rows.Scan(&user.ID, &user.Name, &user.Nick, &user.Email, &user.ImageUrl, &user.Register); 
-		err != nil {
+		if err = rows.Scan(&user.ID, &user.Name, &user.Nick, &user.Email, &user.ImageUrl, &user.Register); err != nil {
 			return nil, err
 		}
 		users = append(users, user)
@@ -48,7 +47,7 @@ func (u usersRepositorie) SelectUser(id uint64) (models.User, error) {
 }
 
 func (u usersRepositorie) SelectUserFromEmail(email string) (models.User, error) {
-	row, err := u.db.Query("SELECT user_id, password FROM users WHERE email = ?", email)
+	row, err := u.db.Query("SELECT * FROM users WHERE email = ?", email)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -56,7 +55,9 @@ func (u usersRepositorie) SelectUserFromEmail(email string) (models.User, error)
 
 	user := models.User{}
 	if row.Next() {
-		if err = row.Scan(&user.ID, &user.Password); err != nil {
+		if err = row.Scan(
+			&user.ID, &user.Name, &user.Nick, &user.Email,
+			&user.Password, &user.ImageUrl, &user.Register); err != nil {
 			return models.User{}, err
 		}
 	}
