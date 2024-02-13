@@ -1,12 +1,16 @@
-"use client";
 import Link from "next/link"
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useState } from "react"
 import { FaBell, FaSearch } from "react-icons/fa"
 import { TbMessageCircle2 } from "react-icons/tb"
+import { IUser } from "../interfaces/IUser";
 
-export const Header = () => {
-    const [user, setUser] = useState({ name: "", image_url: "" })
+interface IPropsHeader {
+    user: IUser | undefined
+    setUser: (value: React.SetStateAction<IUser | undefined>) => void
+}
+
+export const Header: React.FC<IPropsHeader> = ({ user, setUser }) => {
     const [showMenu, setShowMenu] = useState(false)
     const router = useRouter()
 
@@ -14,13 +18,6 @@ export const Header = () => {
         e.preventDefault()
         localStorage.removeItem("devbook:token")
         router.push("/login")
-    }, [])
-
-    useEffect(() => {
-        let value = localStorage.getItem("devbook:user")
-        if (value) {
-            setUser(JSON.parse(value))
-        }
     }, [])
 
     return (
@@ -54,11 +51,11 @@ export const Header = () => {
                         onClick={() => setShowMenu(!showMenu)}
                     >
                         <img
-                            src={user.image_url.length > 0 ? user.image_url : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYNbWxNyDw0PPEQ88-OFj5ySYbAsNUH9gFIyVLMwy0tA&s"}
+                            src={user?.image_url ? user.image_url : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYNbWxNyDw0PPEQ88-OFj5ySYbAsNUH9gFIyVLMwy0tA&s"}
                             alt="Imagem de perfil"
                             className="w-8 h-8 rounded-full"
                         />
-                        <span className="font-bold">{user.name}</span>
+                        <span className="font-bold">{user?.name}</span>
                     </button>
                     {showMenu && (
                         <div className="absolute flex flex-col bg-white p-4 shadow-md rounded-md gap-2 border-t whitespace-nowrap right-[-5px]">
