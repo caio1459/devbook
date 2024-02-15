@@ -4,6 +4,7 @@ import React, { useCallback, useState } from "react"
 import { FaBell, FaSearch } from "react-icons/fa"
 import { TbMessageCircle2 } from "react-icons/tb"
 import { IUser } from "../interfaces/IUser";
+import { UserImage } from "./UserImage";
 
 interface IPropsHeader {
     user: IUser | undefined
@@ -29,11 +30,7 @@ export const Header: React.FC<IPropsHeader> = ({ user, setUser }) => {
                 Devbook
             </Link>
             <div className="flex bg-zinc-200 text-gray-600 px-3 py-1 rounded-full items-center">
-                <input
-                    type="text"
-                    className="bg-zinc-200 outline-none"
-                    placeholder="Pesquisar"
-                />
+                <input type="text" className="bg-zinc-200 outline-none" placeholder="Pesquisar" />
                 <FaSearch />
             </div>
             <div className="flex gap-2 items-center text-gray-600">
@@ -50,11 +47,7 @@ export const Header: React.FC<IPropsHeader> = ({ user, setUser }) => {
                         className="flex gap-2 items-center"
                         onClick={() => setShowMenu(!showMenu)}
                     >
-                        <img
-                            src={user?.image_url ? user.image_url : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYNbWxNyDw0PPEQ88-OFj5ySYbAsNUH9gFIyVLMwy0tA&s"}
-                            alt="Imagem de perfil"
-                            className="w-8 h-8 rounded-full"
-                        />
+                        <UserImage image_url={user?.image_url} />
                         <span className="font-bold">{user?.name}</span>
                     </button>
                     {showMenu && (

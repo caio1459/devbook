@@ -14,6 +14,7 @@ type Publications struct {
 	ActorNick string    `json:"actor_nick,omitempty"`
 	ImageUrl  string    `json:"image_url,omitempty"`
 	Likes     uint64    `json:"likes"`
+	UserImage string    `json:"user_image,omitempty"`
 	Register  time.Time `json:"register,omitempty"`
 }
 

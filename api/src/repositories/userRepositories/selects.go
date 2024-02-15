@@ -9,7 +9,7 @@ import (
 func (u usersRepositorie) SelectUsers(valueFilter string) ([]models.User, error) {
 	valueFilter = fmt.Sprintf("%%%s%%", valueFilter) //Cria o LIKE %Valor%
 	rows, err := u.db.Query(
-		"SELECT user_id, name, nick, email, image_url,register FROM users WHERE name LIKE ? OR nick LIKE ?",
+		"SELECT user_id, name, nick, email, image_url, register FROM users WHERE name LIKE ? OR nick LIKE ?",
 		valueFilter, valueFilter,
 	)
 	if err != nil {
@@ -20,7 +20,10 @@ func (u usersRepositorie) SelectUsers(valueFilter string) ([]models.User, error)
 	users := []models.User{}
 	for rows.Next() {
 		user := models.User{}
-		if err = rows.Scan(&user.ID, &user.Name, &user.Nick, &user.Email, &user.ImageUrl, &user.Register); err != nil {
+		if err = rows.Scan(
+			&user.ID, &user.Name, &user.Nick, &user.Email,
+			&user.ImageUrl, &user.Register,
+		); err != nil {
 			return nil, err
 		}
 		users = append(users, user)
