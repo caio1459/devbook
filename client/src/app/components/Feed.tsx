@@ -1,33 +1,44 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Publication } from "./Publication";
-import { IPublication } from "../interfaces/IPublication";
-import AxiosService from "../services/AxiosService";
+import { IPublication } from "../../interfaces/IPublication";
+import AxiosService from "../../services/AxiosService";
+import { Share } from "./Share";
+import { IUser } from "@/interfaces/IUser";
+import { useQuery } from "react-query";
+import { AuthContext } from "@/contexts/AuthContext";
 
 export const Feed = () => {
-    const [publications, setPublications] = useState<IPublication[] | undefined>(undefined)
+  const [user, setUser] = useState<IUser | undefined>(undefined)
+  const { headers } = useContext(AuthContext)
 
-    useEffect(() => {
-        const storedToken = localStorage.getItem("devbook:token")
-        //Formata o token para retirar as aspas
-        const token = storedToken?.replace(/^"(.*)"$/, '$1');
-        //Define o cabeçario da requisição
-        const headers = {
-            "Authorization": `Bearer ${token}`,
-        };
-        AxiosService.makeRequest().get("/publications", { headers }).then(res => {
-            setPublications(res.data)
-        }).catch(err => {
-            console.log(err)
-        })
-    }, [])
+  useEffect(() => {
+    let userStorage = localStorage.getItem("devbook:user")
+    if (userStorage) setUser(JSON.parse(userStorage))
+  }, [])
 
-    return (
-        <div className="flex flex-col items-center gap-5 mt-4 w-full mb-4">
-            {
-                publications?.map((publication, i) =>
-                    (<Publication publication={publication} key={i} />)
-                )
-            }
-        </div>
-    )
+  const { data, isLoading, error } = useQuery<IPublication[] | undefined>({
+    queryKey: ["publications"],
+    queryFn: () => AxiosService.makeRequest().get("/publications", headers).then(res => res.data)
+  })
+
+  if (error) {
+    console.log(error)
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-5 mt-4 w-full mb-4">
+      <Share user={user} />
+      {isLoading ? <span>Carregando...</span> :
+        (
+          data?.map((publication, i) => {
+            return (
+              <div className="w-full flex flex-col items-center" key={i}>
+                <Publication publication={publication} />
+              </div>
+            )
+          })
+        )
+      }
+    </div>
+  )
 }
