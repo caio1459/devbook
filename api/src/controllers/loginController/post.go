@@ -53,7 +53,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := models.Response{
+	response := models.ResponseLogin{
 		User:  savedUser,
 		Token: token,
 	}

@@ -14,15 +14,15 @@ export default function Home() {
   useEffect(() => {
     let userStorage = localStorage.getItem("devbook:user")
     if (userStorage) setUser(JSON.parse(userStorage))
+
+    let token = localStorage.getItem("devbook:token")
+    if (!token) router.push("/login")
     //Define o local storage para seis horas
     setTimeout(() => {
       localStorage.removeItem("devbook:token")
       localStorage.removeItem("devbook:user")
       location.reload() //Atualiza a página
     }, 21600000); // 6 horas em milissegundos
-
-    let token = localStorage.getItem("devbook:token")
-    if (!token) router.push("/login")
   }, [])
 
   return (
@@ -31,7 +31,7 @@ export default function Home() {
         <Header user={user} />
         <div className="w-full flex justify-start">
           <Sidebar user={user} />
-          <Feed />
+          <Feed user={user} />
         </div>
       </main>
     </AuthContextProvider>

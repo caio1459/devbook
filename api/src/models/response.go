@@ -1,6 +1,6 @@
 package models
 
-type Response struct {
+type ResponseLogin struct {
 	User  User   `json:"user"`
 	Token string `json:"token"`
 }

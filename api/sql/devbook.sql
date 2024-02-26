@@ -43,3 +43,18 @@ CREATE TABLE `devbook`.`publications` (
     `register` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(), 
     PRIMARY KEY (`pub_id`)
 ) ENGINE = InnoDB;
+
+CREATE TABLE `devbook`.`comments` (
+    `com_id` INT NOT NULL AUTO_INCREMENT, 
+    `user_id` INT NOT NULL,
+    FOREIGN KEY (`user_id`)
+    REFERENCES `devbook`.`users` (`user_id`)
+    ON DELETE CASCADE,
+    `pub_id` INT NOT NULL,
+    FOREIGN KEY (`pub_id`)
+    REFERENCES `devbook`.`publications` (`pub_id`)
+    ON DELETE CASCADE,
+    `text` VARCHAR(200) NOT NULL, 
+    `register` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(), 
+    PRIMARY KEY (`com_id`)
+) ENGINE = InnoDB;

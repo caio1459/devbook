@@ -6,5 +6,6 @@ export interface IPublication {
   image_url: string;
   likes: number;
   register: string;
+  user_id: number;
   user_image: string;
 }

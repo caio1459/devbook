@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Publication } from "./Publication";
 import { IPublication } from "../../interfaces/IPublication";
 import AxiosService from "../../services/AxiosService";
@@ -7,14 +7,18 @@ import { IUser } from "@/interfaces/IUser";
 import { useQuery } from "react-query";
 import { AuthContext } from "@/contexts/AuthContext";
 
-export const Feed = () => {
-  const [user, setUser] = useState<IUser | undefined>(undefined)
+interface IPropsFeed {
+  user: IUser | undefined
+}
+
+export const Feed: React.FC<IPropsFeed> = ({user}) => {
+  // const [user, setUser] = useState<IUser | undefined>(undefined)
   const { headers } = useContext(AuthContext)
 
-  useEffect(() => {
-    let userStorage = localStorage.getItem("devbook:user")
-    if (userStorage) setUser(JSON.parse(userStorage))
-  }, [])
+  // useEffect(() => {
+  //   let userStorage = localStorage.getItem("devbook:user")
+  //   if (userStorage) setUser(JSON.parse(userStorage))
+  // }, [])
 
   const { data, isLoading, error } = useQuery<IPublication[] | undefined>({
     queryKey: ["publications"],
@@ -33,7 +37,7 @@ export const Feed = () => {
           data?.map((publication, i) => {
             return (
               <div className="w-full flex flex-col items-center" key={i}>
-                <Publication publication={publication} />
+                <Publication publication={publication} user={user} />
               </div>
             )
           })

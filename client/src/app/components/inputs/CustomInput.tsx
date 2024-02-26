@@ -3,7 +3,7 @@ import React from "react"
 interface IPropsCustomInput {
   children: React.ReactNode
   placeholder: string
-  value?: string
+  value: string
   onChange: (newValue: string) => void | undefined
 }
 
