@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: devbook
+      MYSQL_USER: seuUserName
+      MYSQL_PASSWORD: 1234
