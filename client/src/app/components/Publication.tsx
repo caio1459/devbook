@@ -11,14 +11,14 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { IComment } from "@/interfaces/IComment";
 import AxiosService from "@/services/AxiosService";
 import { AuthContext } from "@/contexts/AuthContext";
-import { IUser } from "@/interfaces/IUser";
 
 interface IPropsPublication {
-  publication: IPublication | undefined
-  user: IUser | undefined
+  publication: IPublication
+  userImg?: string
+  userID?: number
 }
 
-export const Publication: React.FC<IPropsPublication> = ({ publication, user }) => {
+export const Publication: React.FC<IPropsPublication> = ({ publication, userImg, userID }) => {
   const [text, setText] = useState("")
   const { headers } = useContext(AuthContext)
   const queryClient = useQueryClient()
@@ -31,17 +31,21 @@ export const Publication: React.FC<IPropsPublication> = ({ publication, user }) 
     enabled: !!publication?.pub_id //Só ativa a Query se tiver o parametro id
   })
 
+  if (error) {
+    console.log(error)
+  }
+
   const mutation = useMutation({
     mutationFn: async (newValue: {}) => {
-      await AxiosService.makeRequest().post(`/comments/${publication?.pub_id}`, { text }, headers).then(
-        res => res.data
-      )
+      await AxiosService.makeRequest().post(`/comments/${publication?.pub_id}`, { userID, text }, headers)
+        .then(res => res.data)
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["comments", publication?.pub_id] })
   })
 
-  if (error) {
-    console.log(error)
+  const shareComent = async () => {
+    mutation.mutate({ userID, text })
+    setText("")
   }
 
   return (
@@ -81,13 +85,16 @@ export const Publication: React.FC<IPropsPublication> = ({ publication, user }) 
           <FaRegComment />
         </ActionsButtons>
       </ContainerButtons>
-      <div>
+      <div className="flex flex-row gap-2">
+        <UserImage image_url={userImg} />
         <CustomInput
           placeholder={"Adicionar comentario"}
           onChange={newValue => setText(newValue)}
           value={text}
         >
-          <FaPaperPlane />
+          <button onClick={() => shareComent()}>
+            <FaPaperPlane />
+          </button>
         </CustomInput>
       </div>
     </div>

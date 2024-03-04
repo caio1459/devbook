@@ -11,14 +11,9 @@ interface IPropsFeed {
   user: IUser | undefined
 }
 
-export const Feed: React.FC<IPropsFeed> = ({user}) => {
+export const Feed: React.FC<IPropsFeed> = ({ user }) => {
   // const [user, setUser] = useState<IUser | undefined>(undefined)
   const { headers } = useContext(AuthContext)
-
-  // useEffect(() => {
-  //   let userStorage = localStorage.getItem("devbook:user")
-  //   if (userStorage) setUser(JSON.parse(userStorage))
-  // }, [])
 
   const { data, isLoading, error } = useQuery<IPublication[] | undefined>({
     queryKey: ["publications"],
@@ -37,7 +32,11 @@ export const Feed: React.FC<IPropsFeed> = ({user}) => {
           data?.map((publication, i) => {
             return (
               <div className="w-full flex flex-col items-center" key={i}>
-                <Publication publication={publication} user={user} />
+                <Publication
+                  publication={publication}
+                  userImg={user?.image_url}
+                  userID={user?.user_id}
+                />
               </div>
             )
           })

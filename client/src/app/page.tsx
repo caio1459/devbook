@@ -17,12 +17,6 @@ export default function Home() {
 
     let token = localStorage.getItem("devbook:token")
     if (!token) router.push("/login")
-    //Define o local storage para seis horas
-    setTimeout(() => {
-      localStorage.removeItem("devbook:token")
-      localStorage.removeItem("devbook:user")
-      location.reload() //Atualiza a página
-    }, 21600000); // 6 horas em milissegundos
   }, [])
 
   return (

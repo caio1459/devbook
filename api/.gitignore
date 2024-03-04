@@ -1,7 +1,4 @@
 images
-
 logfile.log
-
 .env
-
 docker-compose.yml
