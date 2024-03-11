@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react"
+import React, { useContext, useRef, useState } from "react"
 import { IPublication } from "../../interfaces/IPublication"
 import { FaPaperPlane, FaRegComment, FaThumbsDown, FaThumbsUp } from "react-icons/fa"
 import moment from "moment"
@@ -11,6 +11,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import { IComment } from "@/interfaces/IComment";
 import AxiosService from "@/services/AxiosService";
 import { AuthContext } from "@/contexts/AuthContext";
+import { Comments } from "./Comments";
 
 interface IPropsPublication {
   publication: IPublication
@@ -20,8 +21,12 @@ interface IPropsPublication {
 
 export const Publication: React.FC<IPropsPublication> = ({ publication, userImg, userID }) => {
   const [text, setText] = useState("")
+  const [showComments, setShowComments] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null);
   const { headers } = useContext(AuthContext)
   const queryClient = useQueryClient()
+
+  const handleCommentClick = () => inputRef.current?.focus()
 
   const { data, error, isLoading } = useQuery<IComment[] | undefined>({
     queryKey: ["comments", publication?.pub_id],
@@ -72,7 +77,9 @@ export const Publication: React.FC<IPropsPublication> = ({ publication, userImg,
           </span>
           {publication?.likes}
         </div>
-        <span>{data && data.length > 0 ? `${data.length} Comentarios` : ""}</span>
+        <button onClick={() => setShowComments(!showComments)}>
+          <span>{data && data.length > 0 ? `${data.length} Comentarios` : ""}</span>
+        </button>
       </div>
       <ContainerButtons>
         <ActionsButtons text={"Curtir"}>
@@ -81,13 +88,18 @@ export const Publication: React.FC<IPropsPublication> = ({ publication, userImg,
         <ActionsButtons text={"Descurtir"}>
           <FaThumbsDown />
         </ActionsButtons>
-        <ActionsButtons text={"Comentar"}>
+        <ActionsButtons
+          text={"Comentar"}
+          onClick={handleCommentClick}
+        >
           <FaRegComment />
         </ActionsButtons>
       </ContainerButtons>
+      {showComments && data?.map((comment, i) => <Comments key={i} comment={comment} />)}
       <div className="flex flex-row gap-2">
         <UserImage image_url={userImg} />
         <CustomInput
+          ref={inputRef}
           placeholder={"Adicionar comentario"}
           onChange={newValue => setText(newValue)}
           value={text}
