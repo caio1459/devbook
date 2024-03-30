@@ -22,13 +22,14 @@ interface IPropsPublication {
 export const Publication: React.FC<IPropsPublication> = ({ publication, userImg, userID }) => {
   const [text, setText] = useState("")
   const [showComments, setShowComments] = useState(false)
+  const [likes, setLikes] = useState(publication.likes)
   const inputRef = useRef<HTMLInputElement>(null);
   const { headers } = useContext(AuthContext)
   const queryClient = useQueryClient()
 
   const handleCommentClick = () => inputRef.current?.focus()
 
-  const { data, error, isLoading } = useQuery<IComment[] | undefined>({
+  const commentQuery = useQuery<IComment[] | undefined>({
     queryKey: ["comments", publication?.pub_id],
     queryFn: () => AxiosService.makeRequest().get(`/comments/${publication?.pub_id}`, headers).then(
       res => res.data
@@ -36,11 +37,11 @@ export const Publication: React.FC<IPropsPublication> = ({ publication, userImg,
     enabled: !!publication?.pub_id //Só ativa a Query se tiver o parametro id
   })
 
-  if (error) {
-    console.log(error)
+  if (commentQuery.error) {
+    console.log(commentQuery.error)
   }
 
-  const mutation = useMutation({
+  const commentMutation = useMutation({
     mutationFn: async (newValue: {}) => {
       await AxiosService.makeRequest().post(`/comments/${publication?.pub_id}`, { userID, text }, headers)
         .then(res => res.data)
@@ -49,8 +50,20 @@ export const Publication: React.FC<IPropsPublication> = ({ publication, userImg,
   })
 
   const shareComent = async () => {
-    mutation.mutate({ userID, text })
+    commentMutation.mutate({ userID, text })
     setText("")
+  }
+
+  const handleLike = () => {
+    AxiosService.makeRequest().put(`/publication/${publication.pub_id}/like`, publication.pub_id, headers)
+      .then(res => setLikes(res.data))
+      .catch(err => console.error(err))
+  }
+
+  const handleDelike = () => {
+    AxiosService.makeRequest().put(`/publication/${publication.pub_id}/deslike`, publication.pub_id, headers)
+      .then(res => setLikes(res.data))
+      .catch(err => console.error(err))
   }
 
   return (
@@ -75,17 +88,27 @@ export const Publication: React.FC<IPropsPublication> = ({ publication, userImg,
           <span className="bg-blue-700 w-6 h-6 text-white rounded-full flex items-center justify-center text-sm">
             <FaThumbsUp />
           </span>
-          {publication?.likes}
+          {likes}
         </div>
         <button onClick={() => setShowComments(!showComments)}>
-          <span>{data && data.length > 0 ? `${data.length} Comentarios` : ""}</span>
+          <span>
+            {
+              commentQuery.data && commentQuery.data.length > 0 ? `${commentQuery.data.length} Comentarios` : ""
+            }
+          </span>
         </button>
       </div>
       <ContainerButtons>
-        <ActionsButtons text={"Curtir"}>
+        <ActionsButtons
+          text={"Curtir"}
+          onClick={handleLike}
+        >
           <FaThumbsUp />
         </ActionsButtons>
-        <ActionsButtons text={"Descurtir"}>
+        <ActionsButtons
+          text={"Descurtir"}
+          onClick={handleDelike}
+        >
           <FaThumbsDown />
         </ActionsButtons>
         <ActionsButtons
@@ -95,7 +118,7 @@ export const Publication: React.FC<IPropsPublication> = ({ publication, userImg,
           <FaRegComment />
         </ActionsButtons>
       </ContainerButtons>
-      {showComments && data?.map((comment, i) => <Comments key={i} comment={comment} />)}
+      {showComments && commentQuery.data?.map((comment, i) => <Comments key={i} comment={comment} />)}
       <div className="flex flex-row gap-2">
         <UserImage image_url={userImg} />
         <CustomInput

@@ -60,6 +60,7 @@ func UpdatePublication(w http.ResponseWriter, r *http.Request) {
 	publication := models.Publications{}
 	if err = json.Unmarshal(requestBody, &publication); err != nil {
 		responses.Erro(w, http.StatusBadRequest, err)
+		return
 	}
 
 	if err = publication.Prepare(); err != nil {
@@ -97,11 +98,12 @@ func Likes(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	repositorie := publicationrepositories.NewRepositoriePublication(db)
-	if err = repositorie.UpdateLikes(ID); err != nil {
+	likes, err := repositorie.UpdateLikes(ID)
+	if err != nil {
 		responses.Erro(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.Json(w, http.StatusOK, fmt.Sprintf("Publicação %v curtida", ID))
+	responses.Json(w, http.StatusOK, likes)
 }
 
 func Deslikes(w http.ResponseWriter, r *http.Request) {
@@ -120,9 +122,10 @@ func Deslikes(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	repositorie := publicationrepositories.NewRepositoriePublication(db)
-	if err = repositorie.UpdateDeslikes(ID); err != nil {
+	likes, err := repositorie.UpdateDeslikes(ID)
+	if err != nil {
 		responses.Erro(w, http.StatusInternalServerError, err)
 		return
 	}
-	responses.Json(w, http.StatusOK, fmt.Sprintf("Publicação %v Descurtida", ID))
+	responses.Json(w, http.StatusOK, likes)
 }

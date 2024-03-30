@@ -1,0 +1,404 @@
+{
+	"info": {
+		"_postman_id": "7f39b167-4369-48b4-b3a3-4c2266b745e6",
+		"name": "Devbook",
+		"description": "Rotas do projeto",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "28417384"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Inserir Usuario",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Neymar\",\r\n    \"nick\": \"Meni Ney\",\r\n    \"email\": \"ne@gmail.com\",\r\n    \"password\": \"12\",\r\n    \"image_url\": \"https://i.pinimg.com/236x/d4/2c/50/d42c50654b13d1f3df6c7939c3ea1fd9.jpg\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/users"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MTE3NjU0NTAsInVzZXJfaWQiOjF9.zDZdT_d78o1Mb_DLUR5-ZxPtn2tn8dhKivK_8nCLnyo"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/api/users"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDY2ODgzNDEsInVzZXJfaWQiOjV9.93ABWe9KICK_2j0wPJMLUGTz68hVZXYkbbadqQifPFA"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Neymar\",\r\n    \"nick\": \"Menino Ney\",\r\n    \"email\": \"neyzinho@gmail.com\",\r\n    \"image_url\": \"https://i.pinimg.com/236x/d4/2c/50/d42c50654b13d1f3df6c7939c3ea1fd9.jpg\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/users/5"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDc4NzY0MzIsInVzZXJfaWQiOjF9.DNfdkGbey_V37pufFW-qnWZCXf2FvvQglMKjOKO-eO8"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/api/users/1/publications"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDYzMzY5MDksInVzZXJfaWQiOjEwfQ.dZhRBcVj9JJ0aCPcmDjLmgflxc0BgXtNC6t8Mj1HVOI"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:5000/api/users/9"
+					},
+					"response": []
+				},
+				{
+					"name": "Seguir user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDY3NjY4NzEsInVzZXJfaWQiOjF9.LvC0TbAb8g66YNDm3kJMz-YTYOT2dVdYrab04YuWd1A"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"url": "http://localhost:5000/api/users/5/follow"
+					},
+					"response": []
+				},
+				{
+					"name": "Parar de seguir User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDY1MDY2OTUsInVzZXJfaWQiOjF9.HXOrVohvL7F5fByFpekCtboZWOkzrhb11wsVruESguY"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:5000/api/users/3/follow"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Seguidores",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDY3NjY4NzEsInVzZXJfaWQiOjF9.LvC0TbAb8g66YNDm3kJMz-YTYOT2dVdYrab04YuWd1A"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/api/users/1/follows"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar quem está seguindo",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDY3NjY4NzEsInVzZXJfaWQiOjF9.LvC0TbAb8g66YNDm3kJMz-YTYOT2dVdYrab04YuWd1A"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/api/users/1/following"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Senha",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDY2ODEyOTQsInVzZXJfaWQiOjF9.i4XtNYTgA1ZTjMyoGr1jrQBV2XmwxQrCgJX7YljSeAI"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"new\": \"teste\",\r\n    \"current\": \"123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/users/3/update-password"
+					},
+					"response": []
+				}
+			],
+			"description": "### Rotas de usuários"
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": ""
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"teste@gmail.com\",\r\n    \"password\": \"teste\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/login"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Comentarios",
+			"item": [
+				{
+					"name": "Criar comentário",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDg5MTA3NDgsInVzZXJfaWQiOjV9.3eZwjKOlGi1DVaZT3DD-tZGRZtplFLwnaIu5tDyYIR8"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"text\": \"Muito ruim\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/comments/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Comentarios",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDk1MzY2MTksInVzZXJfaWQiOjF9.RWHQ5K0v6ryD-zoOT-yUO9Qp1R_UcngEOr3xrKBdBzo"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/api/comments/11"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Publicações",
+			"item": [
+				{
+					"name": "Criar Publicação",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDY4NTE4NjgsInVzZXJfaWQiOjF9.bePP55KCeU3BH9s14qoIm0Q06yj_ZCJd68u8PQFiPnI"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Minha primeira publicação\",\r\n    \"content\": \"é os guri\",\r\n    \"image_url\": \"https://s2-ge.glbimg.com/ouJy0A-so5XQsItuxKpPehAGhDY=/0x600:2400x1950/540x304/smart/filters:max_age(3600)/https://i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2024/a/0/idzj7ASAqwg1sFKVTreg/53501845629-d4ae31fe2e-o.jpg\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/publications"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Publicação",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDg5MjI1NjUsInVzZXJfaWQiOjF9.KmOd4vnmpBjzeBQ3SJzq7-Z7LDDXbG1KgfEcpPgoiNI"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/api/publication/2"
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Publicações",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MTE3NDgyNzAsInVzZXJfaWQiOjF9.DbKukXojRBJrBmouS3DFmAPVXwMADRSQtROW_odnkV0"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/api/publications"
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Publicação",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDY4NTMwMTksInVzZXJfaWQiOjF9.PcoTUmgMzHMp8FMbAPagkxujzGylhhIUGSDyG5AhOfE"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"Minha primeira publicação\",\r\n    \"content\": \"Bahh é os guri\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/publication/5"
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar publicação",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDY4NTMwMTksInVzZXJfaWQiOjF9.PcoTUmgMzHMp8FMbAPagkxujzGylhhIUGSDyG5AhOfE"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:5000/api/publication/5"
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar publicações por usuário",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDc4OTE2ODIsInVzZXJfaWQiOjF9.DMxtCNDN9sKAMuL7QSQ2W8Hg29i4bj3e41aedTKBmDw"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/api/users/1/publications"
+					},
+					"response": []
+				},
+				{
+					"name": "Curtir publicação",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MTE3NDgyNzAsInVzZXJfaWQiOjF9.DbKukXojRBJrBmouS3DFmAPVXwMADRSQtROW_odnkV0"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"url": "http://localhost:5000/api/publication/6/like"
+					},
+					"response": []
+				},
+				{
+					"name": "Descurtir publicação",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3MDY4NTMwMTksInVzZXJfaWQiOjF9.PcoTUmgMzHMp8FMbAPagkxujzGylhhIUGSDyG5AhOfE"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"url": "http://localhost:5000/api/publication/6/deslike"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
